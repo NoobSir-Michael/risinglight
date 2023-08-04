@@ -90,8 +90,8 @@ mod tests {
                 0,
                 "t",
                 &[
-                    ColumnCatalog::new(0, DataTypeKind::Int32.not_null().to_column("v1".into())),
-                    ColumnCatalog::new(1, DataTypeKind::Int32.not_null().to_column("v2".into())),
+                    ColumnCatalog::new(0, DataTypeKind::Int32.not_null().to_column("v1".into(), false)),
+                    ColumnCatalog::new(1, DataTypeKind::Int32.not_null().to_column("v2".into(), false)),
                 ],
                 &[],
             )

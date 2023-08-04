@@ -135,7 +135,7 @@ mod tests {
         let mut builder = RowsetBuilder::new(
             vec![ColumnCatalog::new(
                 0,
-                DataTypeKind::Int32.nullable().to_column("v1".to_string()),
+                DataTypeKind::Int32.nullable().to_column("v1".to_string(), false),
             )]
             .into(),
             ColumnBuilderOptions::default_for_test(),

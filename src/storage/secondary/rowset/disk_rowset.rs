@@ -192,25 +192,25 @@ pub mod tests {
             ColumnCatalog::new(
                 0,
                 if nullable {
-                    DataTypeKind::Int32.nullable().to_column("v1".to_string())
+                    DataTypeKind::Int32.nullable().to_column("v1".to_string(), false)
                 } else {
-                    DataTypeKind::Int32.not_null().to_column("v1".to_string())
+                    DataTypeKind::Int32.not_null().to_column("v1".to_string(), false)
                 },
             ),
             ColumnCatalog::new(
                 1,
                 if nullable {
-                    DataTypeKind::Int32.nullable().to_column("v2".to_string())
+                    DataTypeKind::Int32.nullable().to_column("v2".to_string(), false)
                 } else {
-                    DataTypeKind::Int32.not_null().to_column("v2".to_string())
+                    DataTypeKind::Int32.not_null().to_column("v2".to_string(), false)
                 },
             ),
             ColumnCatalog::new(
                 2,
                 if nullable {
-                    DataTypeKind::Int32.nullable().to_column("v3".to_string())
+                    DataTypeKind::Int32.nullable().to_column("v3".to_string(), false)
                 } else {
-                    DataTypeKind::Int32.not_null().to_column("v3".to_string())
+                    DataTypeKind::Int32.not_null().to_column("v3".to_string(), false)
                 },
             ),
         ];
@@ -262,9 +262,9 @@ pub mod tests {
         let columns = vec![ColumnCatalog::new(
             0,
             if nullable {
-                DataTypeKind::Int32.nullable().to_column("v1".to_string())
+                DataTypeKind::Int32.nullable().to_column("v1".to_string(), false)
             } else {
-                DataTypeKind::Int32.not_null().to_column("v1".to_string())
+                DataTypeKind::Int32.not_null().to_column("v1".to_string(), false)
             },
         )];
         let mut column_options = ColumnBuilderOptions::default_for_test();
@@ -305,9 +305,9 @@ pub mod tests {
         let columns = vec![ColumnCatalog::new(
             0,
             if nullable {
-                DataTypeKind::Int32.nullable().to_column("v1".to_string())
+                DataTypeKind::Int32.nullable().to_column("v1".to_string(), false)
             } else {
-                DataTypeKind::Int32.not_null().to_column("v1".to_string())
+                DataTypeKind::Int32.not_null().to_column("v1".to_string(), false)
             },
         )];
         let mut column_options = ColumnBuilderOptions::default_for_test();
@@ -346,15 +346,15 @@ pub mod tests {
                 0,
                 DataTypeKind::Int32
                     .not_null()
-                    .to_column_primary_key("v1".to_string()),
+                    .to_column_primary_key("v1".to_string(), false),
             ),
             ColumnCatalog::new(
                 1,
-                DataTypeKind::Int32.not_null().to_column("v2".to_string()),
+                DataTypeKind::Int32.not_null().to_column("v2".to_string(), false),
             ),
             ColumnCatalog::new(
                 2,
-                DataTypeKind::Int32.not_null().to_column("v3".to_string()),
+                DataTypeKind::Int32.not_null().to_column("v3".to_string(), false),
             ),
         ];
 

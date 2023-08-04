@@ -126,7 +126,7 @@ impl Inner {
                     0,
                     DataTypeKind::String
                         .not_null()
-                        .to_column("github_id".into()),
+                        .to_column("github_id".into(), false),
                 )],
                 false,
                 vec![],

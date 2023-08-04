@@ -12,15 +12,25 @@ pub struct ColumnDesc {
     datatype: DataType,
     name: String,
     is_primary: bool,
+    is_required: bool,
 }
 
 impl ColumnDesc {
-    pub const fn new(datatype: DataType, name: String, is_primary: bool) -> Self {
+    pub const fn new(datatype: DataType, name: String, is_primary: bool, is_required: bool) -> Self {
         ColumnDesc {
             datatype,
             name,
             is_primary,
+            is_required,
         }
+    }
+
+    pub fn set_is_required(&mut self, is_required: bool){
+        self.is_required = is_required;
+    }
+
+    pub fn is_required(& self) -> bool{
+        self.is_required
     }
 
     pub fn set_primary(&mut self, is_primary: bool) {
@@ -58,17 +68,20 @@ impl ColumnDesc {
         if self.datatype.nullable {
             fields.push(("nullable", Pretty::display(&self.datatype.nullable)));
         }
+        if self.is_required {
+            fields.push(("required", Pretty::display(&self.is_required)));
+        }
         Pretty::childless_record("Column", fields)
     }
 }
 
 impl DataType {
-    pub const fn to_column(self, name: String) -> ColumnDesc {
-        ColumnDesc::new(self, name, false)
+    pub const fn to_column(self, name: String, required:bool) -> ColumnDesc {
+        ColumnDesc::new(self, name, false, required)
     }
 
-    pub const fn to_column_primary_key(self, name: String) -> ColumnDesc {
-        ColumnDesc::new(self, name, true)
+    pub const fn to_column_primary_key(self, name: String, required:bool) -> ColumnDesc {
+        ColumnDesc::new(self, name, true, required)
     }
 }
 
@@ -123,6 +136,10 @@ impl ColumnCatalog {
     pub fn is_nullable(&self) -> bool {
         self.desc.is_nullable()
     }
+
+    pub fn is_required(&self) -> bool {
+        self.desc.is_required()
+    }
 }
 
 /// Find the id of the sort key among column catalogs
@@ -146,7 +163,7 @@ mod tests {
 
     #[test]
     fn test_column_catalog() {
-        let col_desc = DataTypeKind::Int32.not_null().to_column("grade".into());
+        let col_desc = DataTypeKind::Int32.not_null().to_column("grade".into(), false);
         let mut col_catalog = ColumnCatalog::new(0, col_desc);
         assert_eq!(col_catalog.id(), 0);
         assert!(!col_catalog.is_primary());

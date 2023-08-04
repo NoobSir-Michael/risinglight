@@ -39,7 +39,7 @@ impl TableCatalog {
         table_catalog
             .add_column(ColumnCatalog::new(
                 u32::MAX,
-                DataTypeKind::Int64.not_null().to_column("_rowid_".into()),
+                DataTypeKind::Int64.not_null().to_column("_rowid_".into(), false),
             ))
             .unwrap();
         for col_catalog in columns {
@@ -112,8 +112,8 @@ mod tests {
 
     #[test]
     fn test_table_catalog() {
-        let col0 = ColumnCatalog::new(0, DataTypeKind::Int32.not_null().to_column("a".into()));
-        let col1 = ColumnCatalog::new(1, DataTypeKind::Bool.not_null().to_column("b".into()));
+        let col0 = ColumnCatalog::new(0, DataTypeKind::Int32.not_null().to_column("a".into(),false));
+        let col1 = ColumnCatalog::new(1, DataTypeKind::Bool.not_null().to_column("b".into(), false));
 
         let col_catalogs = vec![col0, col1];
         let table_catalog = TableCatalog::new(0, "t".into(), col_catalogs, false, vec![]);

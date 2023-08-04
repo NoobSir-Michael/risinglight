@@ -172,11 +172,13 @@ impl From<&ColumnDef> for ColumnCatalog {
     fn from(cdef: &ColumnDef) -> Self {
         let mut is_nullable = true;
         let mut is_primary_ = false;
+        let mut is_required = false;
         for opt in &cdef.options {
-            match opt.option {
+            match &opt.option {
                 ColumnOption::Null => is_nullable = true,
                 ColumnOption::NotNull => is_nullable = false,
-                ColumnOption::Unique { is_primary } => is_primary_ = is_primary,
+                ColumnOption::Unique { is_primary } => is_primary_ = *is_primary,
+                ColumnOption::Comment(comment) => is_required = comment.eq(&String::from("required")),
                 _ => todo!("column options"),
             }
         }
@@ -186,6 +188,7 @@ impl From<&ColumnDef> for ColumnCatalog {
                 DataType::new((&cdef.data_type).into(), is_nullable),
                 cdef.name.value.to_lowercase(),
                 is_primary_,
+                is_required
             ),
         )
     }

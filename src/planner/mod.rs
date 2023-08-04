@@ -278,16 +278,17 @@ impl Optimizer {
         // 1. pushdown
         let mut best_cost = f32::MAX;
         // to prune costy nodes, we iterate multiple times and only keep the best one for each run.
-        for _ in 0..3 {
+        for _ in 0..10 {
             let runner = egg::Runner::<_, _, ()>::new(ExprAnalysis {
                 catalog: self.catalog.clone(),
                 config: self.config.clone(),
             })
             .with_expr(&expr)
-            .with_iter_limit(6)
+            .with_iter_limit(60)
             .run(rules::STAGE1_RULES.iter().chain(&extra_rules));
             let cost_fn = cost::CostFn {
                 egraph: &runner.egraph,
+                catalog: &self.catalog ,
             };
             let extractor = egg::Extractor::new(&runner.egraph, cost_fn);
             let cost;
@@ -311,6 +312,7 @@ impl Optimizer {
         .run(&*rules::STAGE2_RULES);
         let cost_fn = cost::CostFn {
             egraph: &runner.egraph,
+            catalog: &self.catalog ,
         };
         let extractor = egg::Extractor::new(&runner.egraph, cost_fn);
         (_, expr) = extractor.find_best(runner.roots[0]);
@@ -323,7 +325,10 @@ impl Optimizer {
         let mut egraph = EGraph::default();
         // NOTE: we assume Expr node has the same Id in both EGraph and RecExpr.
         egraph.add_expr(expr);
-        let mut cost_fn = cost::CostFn { egraph: &egraph };
+        let mut cost_fn = cost::CostFn { 
+            egraph: &egraph , 
+            catalog: &self.catalog ,
+        };
         let mut costs = vec![0.0; expr.as_ref().len()];
         for (i, node) in expr.as_ref().iter().enumerate() {
             let cost = cost_fn.cost(node, |i| costs[usize::from(i)]);

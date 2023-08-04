@@ -1,6 +1,6 @@
 CREATE TABLE `test_table` (
   `id` bigint(20) NOT NULL,
-  `dt` int(11) NOT NULL,
+  `dt` int(11) NOT NULL COMMENT 'required',
   `hour` int(11) NOT NULL,
   `user_id` bigint(20) NOT NULL,
   `action_id` bigint(20) NOT NULL,
