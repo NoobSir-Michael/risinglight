@@ -46,6 +46,7 @@ mod range;
 mod rows;
 mod schema;
 mod type_;
+mod self_rules;
 
 pub use range::filter_scan_rule;
 
@@ -57,6 +58,8 @@ pub static STAGE1_RULES: LazyLock<Vec<Rewrite>> = LazyLock::new(|| {
     rules.append(&mut expr::rules());
     rules.append(&mut plan::always_better_rules());
     rules.append(&mut order::order_rules());
+    // mod
+    rules.append(&mut self_rules::self_def_rules());
     rules
 });
 

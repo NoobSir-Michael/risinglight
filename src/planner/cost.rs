@@ -12,6 +12,44 @@ pub struct CostFn<'a> {
     pub egraph: &'a EGraph,
 }
 
+impl CostFn<'_> {
+    pub fn cond_check(&mut self, lhs:&Id, rhs:&Id, out: &impl Fn() -> f32) -> f32{
+        let lhs = &self.egraph[lhs.clone()].nodes[0];
+        let rhs = &self.egraph[rhs.clone()].nodes[0];
+        let mut factor:f32 = 100000.0;
+        match lhs {
+            Expr::Column(idx) => if idx.column_id == 3 && factor == 100000.0{
+                factor = 1.0;
+            },
+            _ => {}
+        };
+        match rhs {
+            Expr::Column(idx) => if idx.column_id == 3 && factor == 100000.0{
+                factor = 1.0;
+            },
+            _ => {}
+        };
+        factor
+    }
+
+    pub fn condition_out(&mut self, table:&Id, filter:&Id, out: &impl Fn() -> f32) -> f32{
+        let table_node = &self.egraph[table.clone()].nodes;
+        let filter_nodes = &self.egraph[filter.clone()].nodes;
+
+        // assert!(table_node.len() == 1 && filter_nodes.len() == 1, "size is not 1");
+        // match table_node[0] {
+        //     Expr::Table(t) => println!("tableId: {}, {}",t.schema_id, t.table_id),
+        //     _ => println!("err")
+        // }
+        let res = match &filter_nodes[0] {
+            Expr::Eq([lhs, rhs]) => self.cond_check(&lhs, &rhs, &out),
+            _ => 100000.0,
+        };
+
+        return res;
+    }
+}
+
 impl egg::CostFunction<Expr> for CostFn<'_> {
     type Cost = f32;
     fn cost<C>(&mut self, enode: &Expr, mut costs: C) -> Self::Cost
@@ -28,7 +66,8 @@ impl egg::CostFunction<Expr> for CostFn<'_> {
         let out = || rows(id) * cols(id);
 
         let c = match enode {
-            Scan(_) | Values(_) => out(),
+            Scan([table ,_ , filter]) => self.condition_out(table, filter, &out),
+            Values(_) => out(),
             Order([_, c]) => nlogn(rows(c)) + out() + costs(c),
             Filter([exprs, c]) => costs(exprs) * rows(c) + out() + costs(c),
             Proj([exprs, c]) | Window([exprs, c]) => costs(exprs) * rows(c) + costs(c),

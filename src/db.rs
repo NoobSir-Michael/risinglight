@@ -10,6 +10,7 @@ use crate::array::{
 };
 use crate::catalog::RootCatalogRef;
 use crate::parser::{parse, ParserError};
+use crate::planner::Explain;
 use crate::storage::{
     InMemoryStorage, SecondaryStorage, SecondaryStorageOptions, Storage, StorageColumnRef,
     StorageImpl, Table,
@@ -204,7 +205,9 @@ impl Database {
         for stmt in stmts {
             let mut binder = crate::binder::Binder::new(self.catalog.clone());
             let bound = binder.bind(stmt)?;
+            println!("===========\nbefore optimze binder:\n{}",Explain::of(&bound).to_string());
             let optimized = optimizer.optimize(&bound);
+            println!("===========\noptimized res:\n{}\n===========",Explain::of(&optimized).to_string());
             let executor = match self.storage.clone() {
                 StorageImpl::InMemoryStorage(s) => {
                     crate::executor::build(self.catalog.clone(), s, &optimized)
